@@ -1,0 +1,106 @@
+
+.container11 {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+}
+.icon1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+.title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.subtitle {
+    font-size: 16px;
+}
+.resource-banner{
+    text-align: center;
+   
+    font-family: Arial, sans-serif;
+    background-color: rgb(8,8,8, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    width: auto;
+}
+.resource-banner1{
+    text-align: center;
+  
+    font-family: Arial, sans-serif;
+    background-color: rgb(8,8,8);
+    padding: 20px 0px 0px;
+    /* width: 80%; */
+}
+
+.vertical-block .btm{
+    height: 0px;transition: all 0.5s;opacity: 0;
+}
+/* .vertical-block.active .btm{
+    height: 140px;transition: all 0.5s;opacity: 1;
+} */
+.vertical-slider.image-slider .vertical-block img{
+    display: none;position: absolute;
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+    right: 0;
+    top: 0;border-radius: 30px;
+
+}
+.vertical-slider.image-slider .vertical-block.active img{
+    display:block;
+}
+.banner-resources{
+    padding-top: 80px;
+}
+/* .banner-resources .container{
+    max-width: 1440px;
+} */
+.vertical-slider .vertical-block h4{
+    font-size: 22px;
+}
+.vertical-slider .vertical-block{
+    padding: 20px;border-radius: 30px;
+}
+.vertical-slider .vertical-block.active{
+    background-color: rgb(255, 255, 255,0.06);
+}
+.resources-slider .container{
+    max-width: 1220px;
+}
+.banner-resources h1, .resource-banner1 h2{
+    background: -webkit-linear-gradient(#eee, #333);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent; 
+}
+.banner-resources .title{
+    font-size: 20px;
+    
+    background: -webkit-linear-gradient(left, #eee, #333);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;font-weight: 600;
+}
+.more-settings{
+    width: 250px;
+}
+@media (min-width:1200px){
+    .banner-resources h1{
+       font-size: 54px;
+    }
+    .banner-resources .cnt2{
+        max-width: 1540px;
+    }
+    .resource-banner1 h2{
+        font-size: 48px;
+    }
+}
+@media(max-width:767px){
+    .vertical-slider.image-slider .vertical-block img{
+        position: relative;
+        height: 300px;width: 100%;
+    }
+}
