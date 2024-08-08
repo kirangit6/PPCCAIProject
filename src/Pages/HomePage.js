@@ -3,31 +3,33 @@ import { motion, useTransform, useViewportScroll } from "framer-motion";
 import React, { useState } from "react";
 import AnimatedSection from "../Components/AnimatedSection";
 // import { Modal, Button } from 'react-bootstrap';
-function Homepage() {
-  const { scrollY } = useViewportScroll();
-  const scale = useTransform(scrollY, [0, 1000], [1, 0.9]); // Adjust the range [0, 1000] and scale values for smooth decrease
 
+
+function Homepage() {
+ const Mocksite =[
+  {site_text:"GetMunch Pricing",site_url:"https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE",sitePara:"Check Out The Pricing And Pick The Best Plan"},
+  {site_text:"Login",site_url:"https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE",sitePara:"Enter the Required Details To Log In To Your Account."},
+  {site_text:"Main Page",site_url:"https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE",sitePara:"Get To Know Us And Find Out More"},
+  {site_text:"Become An Affiliate",site_url:"https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE",sitePara:"Fill Out the Form With Your Details To Join Our Program."},
+  {site_text:"Our Blog",site_url:"https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE",sitePara:"Check Out Our Blog And Get Inspired"},
+
+ ]
+  const { scrollY } = useViewportScroll();
+  const scale = useTransform(scrollY, [0, 1000], [1, 0.9]); 
   const [showModal, setShowModal] = useState(false);
   const [showModalNext, setShowModalNext] = useState(false);
-  const [showModalPara, setShowModalPara] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [siteData, setSiteData] = useState();
   const [sheetData, setSheetData] = useState();
-
-
+  const [warning, setWarning] = useState('');
   const [generateSite, setGenerateSite] = useState({
     site_description: "",
     site_url: "",
-    // sheet_url: "",
-    // number_of_ads: "",
   });
   const [generateSheet, setGenerateSheet] = useState({
-    // site_description: "",
-    // site_url: "",
     sheet_url: "",
-    number_of_ads: "",
+    number_of_ads: 0,
   });
 
   const handleToggle = () => {
@@ -51,14 +53,33 @@ function Homepage() {
       ...prevState,
       [name]: value,
     }));
+
+    if (value > 10) {
+      setWarning('Warning: The number of ads cannot exceed 10!');
+    } else {
+      setWarning('');
+    }
   };
 
+  let siteText = ["বাংলা", "Log in", "français", "dansk", "español"];
+  let siteLink = [
+      "https://bn.khanacademy.org",
+      "https://www.khanacademy.org/login",
+      "https://fr.khanacademy.org",
+      "https://www.khanacademy.org/login",
+      "https://es.khanacademy.org"
+  ];
+  
+  let combined = siteText.map((text, index) => {
+      return { siteText: text, siteLink: siteLink[index] };
+  });
+  
+  console.log("combined",combined);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-
       const responseGenerate = await Promise.all([
         axios.post("https://ppcc.onrender.com/generate", generateSite)
 
@@ -79,10 +100,6 @@ function Homepage() {
 
 
 
-
-
-console.log('sheetData', sheetData)
-
   const ExtractFunc = async () => {
     setLoading(true);
     try {
@@ -90,7 +107,7 @@ console.log('sheetData', sheetData)
       const response = await axios.post("https://ppcc.onrender.com/extract",
         {
         // sheet_url: "",
-        sheet_url: sheetData[0].sheet_url,
+        sheet_url: sheetData.sheet_url,
 
         responseType: 'blob', // Important for handling binary data
         }
@@ -127,28 +144,29 @@ console.log('sheetData', sheetData)
   const handleSubmitSheet = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-
-      const response = await Promise.all([
-        axios.post("https://ppcc.onrender.com/generate_ads", 
-          {
-            site_url:generateSite.site_url,
-          sheet_url:generateSheet.sheet_url,
-          number_of_ads:generateSheet.number_of_ads}
-      ),
-
-      ]);
-      console.log("response", response);
-      setSheetData(response[0].data.results)
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
+    if (warning == ""){
+      try {
+  
+        const response = await Promise.all([
+          axios.post("https://ppcc.onrender.com/generate_ads", 
+            {
+              site_url:generateSite.site_url,
+            sheet_url:generateSheet.sheet_url,
+            number_of_ads:generateSheet.number_of_ads}
+        ),
+  
+        ]);
+        console.log("response", response);
+        setSheetData(response[0].data)
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
 
-  console.log("siteData", siteData);
 
   return (
     <div className="main">
@@ -253,7 +271,7 @@ console.log('sheetData', sheetData)
                           </div>
                           <div class="google_serach">
                             <div class="ser">
-                              <input type="text" class="google_serach_input" />
+                              <input type="text" class="google_serach_input" value={generateSite.site_url}/>
                               <div class="close d-none" >
                                 <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
                               </div>
@@ -316,11 +334,23 @@ console.log('sheetData', sheetData)
                         </div>
                         <div class="brand_info">
                           <div class="barnd_name">
-                            <h6>GetMunch</h6>
+                            <h6>{siteData?.Root_URL?.split('.')[1]? siteData?.Root_URL?.split('.')[1] :"GetMunch"}</h6>
                             <div class="link">
-                              <a href="https://www.getmunch.com" target="_blank" class="website_link">https://www.getmunch.com</a>
+                              <a href="https://www.getmunch.com" target="_blank" class="website_link">
+                              {siteData?.Root_URL ? siteData?.Root_URL : "https://www.getmunch.com "}
+                              </a>
                               <a href="" class="modal_dot"><i class='bx bx-dots-vertical-rounded' ></i></a>
                             </div>
+
+
+
+
+
+
+
+
+
+
 
                           </div>
                         </div>
@@ -328,69 +358,43 @@ console.log('sheetData', sheetData)
                       <div class="serach_result_main">
 
                         <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujnDj13SG5uIE0xTl617SuBP3vYSLCBm1vr0jMR6uF-aQm83rxWE5xRoCpd0QAvD_BwE" class="" target="_blank">
-                          <h1>  GetMunch - AI Video Editing | Munch App - Register Now</h1>
+                          <h1>{siteData?.Heading ? siteData?.Heading:" GetMunch - AI Video Editing | Munch App - Register Now "}</h1>
                         </a>
+                        {/* <span class="brand_name_highlisght">Munch</span> */}
+                        <p class="info">{siteData?.Description  ? siteData?.Description :
+                          "extracts the most engaging, trending and impactful clips from your long-form videosis centered around machine learning capabilities, designed to keep what's important."}</p>
+                      </div>
+ {siteData?.Sitetext_link?.length >= 0 ? 
+                      siteData?.Sitetext_link?.map((item,index)=>
+                           <div class="Ktlw8e" key={index}>
+                           <div class="iCzAIb">
+                             <div class="d-flx">
+                               <a href={item.site_url} class="">
+                                 {item.site_text}
+                               </a>
+                               <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
+                             </div>
+                             {/* <p class="info d-none">{item.sitePara}</p> */}
+                           </div>
+                         </div>
+                      ):
+                      Mocksite?.map((item,index)=>
+                        <div class="Ktlw8e" key={index}>
+                        <div class="iCzAIb">
+                          <div class="d-flx">
+                            <a href={item.site_url} class="">
+                              {item.site_text}
+                            </a>
+                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
+                          </div>
+                          <p class="info d-none">{item.sitePara}</p>
+                        </div>
+                      </div>
+                   )
 
-                        <p class="info"><span class="brand_name_highlisght">Munch</span> extracts the most engaging, trending and impactful clips from your long-form videos.
-                          <span class="brand_name_highlisght">Munch</span> is centered around machine learning capabilities, designed to keep what's important.</p>
-                      </div>
-                      <div class="Ktlw8e">
-                        <div class="iCzAIb">
-                          <div class="d-flx">
-                            <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE" class="">
-                              GetMunch Pricing
-                            </a>
-                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
-                          </div>
-                          <p class="info d-none">Check Out The Pricing And Pick The Best Plan</p>
-                        </div>
-                      </div>
-                      <div class="Ktlw8e">
-                        <div class="iCzAIb">
-                          <div class="d-flx">
-                            <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE" class="">
-                              Login
-                            </a>
-                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
-                          </div>
-                          <p class="info d-none">Enter the Required Details To Log In To Your Account.</p>
-                        </div>
-                      </div>
-                      <div class="Ktlw8e">
-                        <div class="iCzAIb">
-                          <div class="d-flx">
-                            <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE" class="">
-                              Main Page
-                            </a>
-                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
-                          </div>
-                          <p class="info d-none">Get To Know Us And Find Out More</p>
-                        </div>
-                      </div>
-                      <div class="Ktlw8e">
-                        <div class="iCzAIb">
-                          <div class="d-flx">
-                            <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE" class="">
-                              Become An Affiliate
-                            </a>
-                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
-                          </div>
+ }
 
-                          <p class="info d-none">Fill Out the Form With Your Details To Join Our Program.</p>
-                        </div>
-                      </div>
-                      <div class="Ktlw8e">
-                        <div class="iCzAIb">
-                          <div class="d-flx">
-                            <a href="https://www.getmunch.com/?everid=&oid=2&affid=45&source_id=munch-pricing&gad_source=1&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujvEvl46e6lRPJumAVHq3s3IGvPwjOdtBDxZykDHpcU9tw1d7DbP84xoCu_QQAvD_BwE" class="">
-                              Our Blog
-                            </a>
-                            <div class="icon d-none-icon"><i class='bx bx-chevron-right'></i></div>
-                          </div>
-
-                          <p class="info d-none">Check Out Our Blog And Get Inspired</p>
-                        </div>
-                      </div>
+                     
                     </div>
                   </div>
                 </div>
@@ -426,10 +430,12 @@ console.log('sheetData', sheetData)
                         <input
                           placeholder='number of ads'
                           className='form-control mt-3 '
+                          type="text"
                           name="number_of_ads"
                           value={generateSheet.number_of_ads}
                           onChange={handleSheetFunc}
                         />
+                        {warning && <p style={{ color: 'red' }}>{warning}</p>}
 
                         <button onClick={handleSubmitSheet} className="btn btn-sq me-3 mt-3">
                           Generate ads
