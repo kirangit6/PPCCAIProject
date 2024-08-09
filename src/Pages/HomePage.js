@@ -3,6 +3,7 @@ import { motion, useTransform, useViewportScroll } from "framer-motion";
 import React, { useState } from "react";
 import AnimatedSection from "../Components/AnimatedSection";
 // import { Modal, Button } from 'react-bootstrap';
+import Loader from '../Components/Loader';
 
 
 function Homepage() {
@@ -18,7 +19,7 @@ function Homepage() {
   const scale = useTransform(scrollY, [0, 1000], [1, 0.9]); 
   const [showModal, setShowModal] = useState(false);
   const [showModalNext, setShowModalNext] = useState(false);
-  const [loading, setLoading] = useState(false);
+ 
   const [isActive, setIsActive] = useState(false);
   const [siteData, setSiteData] = useState();
   const [sheetData, setSheetData] = useState();
@@ -29,9 +30,9 @@ function Homepage() {
   });
   const [generateSheet, setGenerateSheet] = useState({
     sheet_url: "",
-    number_of_ads: 0,
+    number_of_ads: "",
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleToggle = () => {
     setIsActive(!isActive);
   };
@@ -61,90 +62,35 @@ function Homepage() {
     }
   };
 
-  let siteText = ["বাংলা", "Log in", "français", "dansk", "español"];
-  let siteLink = [
-      "https://bn.khanacademy.org",
-      "https://www.khanacademy.org/login",
-      "https://fr.khanacademy.org",
-      "https://www.khanacademy.org/login",
-      "https://es.khanacademy.org"
-  ];
-  
-  let combined = siteText.map((text, index) => {
-      return { siteText: text, siteLink: siteLink[index] };
-  });
-  
-  console.log("combined",combined);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     try {
       const responseGenerate = await Promise.all([
         axios.post("https://ppcc.onrender.com/generate", generateSite)
 
       ]);
-      console.log("responseGenerate", responseGenerate);
-
       setSiteData(responseGenerate[0].data);
       setShowModalNext(true);
-
-
-
+      setIsLoading(false);
     } catch (error) {
       console.error("Error:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
 
 
-  const ExtractFunc = async () => {
-    setLoading(true);
-    try {
-      // Make the API request
-      const response = await axios.post("https://ppcc.onrender.com/extract",
-        {
-        // sheet_url: "",
-        sheet_url: sheetData.sheet_url,
 
-        responseType: 'blob', // Important for handling binary data
-        }
-      );
-
-      // Check if response status is 201
-      if (response.status === 200) {
-        // Create a Blob from the response data
-        const blob = new Blob([response.data], { type: 'text/csv' });
-
-        // Create a link element
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'data.csv'; // File name for the downloaded CSV
-
-        // Append the link to the body and click it to start the download
-        document.body.appendChild(link);
-        link.click();
-
-        // Clean up and remove the link
-        document.body.removeChild(link);
-
-        alert("Download started");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to download the file");
-    } finally {
-      setLoading(false);
-    }
-  };
 
 
   const handleSubmitSheet = async (e) => {
     e.preventDefault();
-    setLoading(true);
     if (warning == ""){
+      setIsLoading(true);
       try {
   
         const response = await Promise.all([
@@ -156,19 +102,48 @@ function Homepage() {
         ),
   
         ]);
-        console.log("response", response);
         setSheetData(response[0].data)
+        setIsLoading(false);
       } catch (error) {
         console.error("Error:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
   };
 
-
+  const ExtractFunc = async () => {
+    setIsLoading(true);
+    try {
+     
+      const response = await axios.post("https://ppcc.onrender.com/extract",
+        {
+        sheet_url: sheetData.sheet_url,
+        responseType: 'blob', 
+        }
+      );
+      if (response.status === 200) {
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Sheet.csv'; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setIsLoading(false);
+        alert("Download Successfully!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to download the file");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
+    <>
+    <Loader isLoading={isLoading} />
     <div className="main">
       <div className="outer-banner position-relative">
         <section className="banner text-center">
@@ -551,6 +526,7 @@ function Homepage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 export default Homepage;
