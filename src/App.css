@@ -194,6 +194,9 @@ h1, .h1{
 .banner-form-sec .form-control{
   min-width: 334px;
 }
+.no-of-ads label{
+  font-size: 15px;color: white;
+}
 .banner-form-sec .btn{
   font-size: 16px;
 }
@@ -280,15 +283,24 @@ height: 100vh;
 .more-settings.active .settings-inner{
   opacity: 1;height: 100%;transition: all 0.5s;
 }
+.no-of-ads label{
+  flex-shrink: 0;
+}
 .more-settings .btn{
   cursor: pointer;
 }
 .more-settings.active  .btn{
   width: 100%;text-align: center;justify-content: center;
 }
-.ross{
-  cursor: pointer;
+.more-settings .form-control{
+  padding: 10px;
 }
+.ross{
+  cursor: pointer;padding-right: 18px;position: absolute;
+  right: 00px;
+  top: 30px;
+}
+
 .settings-inner{
   opacity: 0;height: 0;transition: all 0.5s;
 }
@@ -296,7 +308,7 @@ input:focus{
   outline: none !important;
 }
 .outer-more-settings{
-  width: 250px;
+  width: 350px;
 }
 .btm-shadow{
 background: -webkit-linear-gradient(#eee, #333);
@@ -307,12 +319,18 @@ background: -webkit-linear-gradient(#eee, #333);
 body.hidden #root{
   height: 0px;overflow: hidden;
 }
+.warning{
+  font-size: 13.4px;
+}
 @media(min-width:1200px){
   .footer{
     padding-top: 100px;
   }
 }
 @media (max-width:991px){
+  .extract-sc .btn-sq{
+    padding-right: 30px;
+  }
   h1,.h1{
     font-size: 40px;
   }
