@@ -59,55 +59,56 @@ function Homepage() {
       };
 
       if (name === "site_url") {
-        localStorage.setItem('site_link', value);
+        localStorage.setItem('', value);
+        setWarning("");
       }
 
       return updatedState;
     });
   };
-  const GobalSite_link = localStorage.getItem("site_link")
-  const GobalSite_url = localStorage.getItem("sheet_url")
-  const GobalNumber_of_ADS= localStorage.getItem("number_of_ads")
+  // const GobalSite_link = localStorage.getItem("site_link")
+  // const GobalSite_url = localStorage.getItem("sheet_url")
+  // const GobalNumber_of_ADS = localStorage.getItem("number_of_ads")
 
-
-
-
-  const handleSheetFunc = async(e) => {
+  const handleSheetFunc = async (e) => {
     const { name, value } = e.target;
     setGenerateSheet((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  
+    // localStorage.setItem('number_of_ads', value);
     console.log("value",value);
-    localStorage.setItem('number_of_ads', value);
     
-    if (value > 10) {
+    if (value == "" || value > 10) {
       setWarning('Warning: The number of ads cannot exceed 10!');
-    } else {
+    } else if ( generateSite.site_url ==""){
+      setWarning("Please provide the site url before proceeding.");
+    }
+    else {
       setWarning('');
-        setIsLoading(true);
-        try {
-  
-          const response = await Promise.all([
-            axios.post("https://ppcc.onrender.com/generate_ads",
-              {
-                site_url: GobalSite_link,
-                sheet_url: generateSheet.sheet_url,
-                number_of_ads: value
-              }
-            ),
-  
-          ]);
-          setSheetData(response[0].data)
-          localStorage.setItem('sheet_url', response[0].data.sheet_url);
-  
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      
+      setIsLoading(true);
+      try {
+        const response = await Promise.all([
+          axios.post("https://ppcc.onrender.com/generate_ads",
+            {
+              site_url: generateSite.site_url,
+              sheet_url: generateSheet.sheet_url,
+              number_of_ads: value
+            }
+          ),
+
+        ]);
+        setSheetData(response[0].data)
+        localStorage.setItem('sheet_url', response[0]?.data?.sheet_url);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+
     }
   };
 
@@ -122,7 +123,7 @@ function Homepage() {
         axios.post("https://ppcc.onrender.com/generate", generateSite)
 
       ]);
-      setSiteData(responseGenerate[0].data);
+      setSiteData(responseGenerate[0]?.data);
       setShowModalNext(true);
       setIsLoading(false);
     } catch (error) {
@@ -132,247 +133,7 @@ function Homepage() {
     }
   };
 
-  // const handleSubmitSheet = async (e) => {
-  //   e.preventDefault();
-  //   if (warning == "") {
-  //     setIsLoading(true);
-  //     try {
 
-  //       const response = await Promise.all([
-  //         axios.post("https://ppcc.onrender.com/generate_ads",
-  //           {
-  //             site_url: GobalSite_link,
-  //             sheet_url: generateSheet.sheet_url,
-  //             number_of_ads: generateSheet.number_of_ads
-  //           }
-  //         ),
-
-  //       ]);
-  //       setSheetData(response[0].data)
-  //       localStorage.setItem('sheet_url', response[0].data.sheet_url);
-
-  //       setIsLoading(false);
-  //     } catch (error) {
-  //       console.error("Error:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // };
-
-  // More Setting API's 
-  // const handleChange = (event) => {
-  //   const { name, checked } = event.target;
-  //   setCheckedItems({
-  //     ...checkedItems,
-  //     [name]: checked,
-  //   });
-  //   if (checked) {
-  //     setIsLoading(true);
-  //     switch (name) {
-  //       case "All":
-  //         axios.post("https://ppcc.onrender.com/generate_snippet", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Snippet API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Snippet API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-  //       case "Headline":
-  //         axios.post("https://ppcc.onrender.com/generate_ads", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Snippet API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Snippet API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-  //       case "descriptions":
-  //         axios.post("https://ppcc.onrender.com/generate_ads", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Snippet API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Snippet API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-
-  //       case "sitelinks":
-  //         axios.post("https://ppcc.onrender.com/generate_sitelink", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Sitelink API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Sitelink API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-
-  //       case "callout":
-  //         axios.post("https://ppcc.onrender.com/generate_callouts", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Callout API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Callout API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-
-  //       case "snippets":
-  //         axios.post("https://ppcc.onrender.com/generate_snippet", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads
-  //         })
-  //           .then(response => {
-  //             console.log("Snippet API called", response);
-  //             setIsLoading(false); // Set loading state to false after the API call
-  //           })
-  //           .catch(error => {
-  //             console.error("Error calling Snippet API", error);
-  //             setIsLoading(false); // Set loading state to false in case of error
-  //           });
-  //         break;
-
-  //       default:
-  //         setIsLoading(false); // Ensure loading is false if no valid case is matched
-  //         break;
-  //     }
-  //   }
-  // };
-  // const handleChange = async (event) => {
-  //   const { name, checked } = event.target;
-  //   setCheckedItems({
-  //     ...checkedItems,
-  //     [name]: checked,
-  //   });
-
-  //   // Check if the number_of_ads is provided
-  //   if (!generateSheet.number_of_ads) {
-  //     setWarning("Please provide the number of ads before proceeding.");
-  //     return; // Stop further execution if number_of_ads is not provided
-  //   }
-
-  //   if (checked) {
-  //     setIsLoading(true);
-
-  //     try {
-  //       if (name === "All") {
-  //         // Call all APIs sequentially
-  //         await axios.post("https://ppcc.onrender.com/generate_snippet", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads,
-  //         });
-
-
-  //         await axios.post("https://ppcc.onrender.com/generate_ads", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads,
-  //         });
-
-
-  //         await axios.post("https://ppcc.onrender.com/generate_sitelink", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads,
-  //         });
-
-
-  //         await axios.post("https://ppcc.onrender.com/generate_callouts", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads,
-  //         });
-
-
-  //         await axios.post("https://ppcc.onrender.com/generate_snippet", {
-  //           site_url: GobalSite_link,
-  //           sheet_url: sheetData?.sheet_url,
-  //           number_of_ads: generateSheet.number_of_ads,
-  //         });
-
-  //       } else {
-  //         switch (name) {
-  //           case "Headline":
-  //           case "descriptions":
-  //             await axios.post("https://ppcc.onrender.com/generate_ads", {
-  //               site_url: GobalSite_link,
-  //               sheet_url: sheetData?.sheet_url,
-  //               number_of_ads: generateSheet.number_of_ads,
-  //             });
-  //             break;
-
-  //           case "sitelinks":
-  //             await axios.post("https://ppcc.onrender.com/generate_sitelink", {
-  //               site_url: GobalSite_link,
-  //               sheet_url: sheetData?.sheet_url,
-  //               number_of_ads: generateSheet.number_of_ads,
-  //             });
-
-  //             break;
-
-  //           case "callout":
-  //             await axios.post("https://ppcc.onrender.com/generate_callouts", {
-  //               site_url: GobalSite_link,
-  //               sheet_url: sheetData?.sheet_url,
-  //               number_of_ads: generateSheet.number_of_ads,
-  //             });
-
-  //             break;
-
-  //           case "snippets":
-  //             await axios.post("https://ppcc.onrender.com/generate_snippet", {
-  //               site_url: GobalSite_link,
-  //               sheet_url: sheetData?.sheet_url,
-  //               number_of_ads: generateSheet.number_of_ads,
-  //             });
-  //             break;
-
-  //           default:
-  //             break;
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error calling API", error);
-  //     } finally {
-  //       setIsLoading(false); // Set loading state to false after all API calls are done
-  //     }
-  //   }
-  // };
-  
-  
   const handleChange = async (event) => {
     const { name, checked } = event.target;
     setCheckedItems({
@@ -381,9 +142,14 @@ function Homepage() {
     });
 
     // Check if the number_of_ads is provided
-    if (!generateSheet.number_of_ads) {
+    if (generateSheet.number_of_ads =="") {
       setWarning("Please provide the number of ads before proceeding.");
       return; // Stop further execution if number_of_ads is not provided
+    }else if (generateSite.site_url==""){
+      setWarning("Please provide the site url before proceeding.");
+      return;
+    }else if(sheetData?.sheet_url==""){
+      setWarning("You have to get the sheet url before  click all the checkbox .");
     }
 
     if (checked) {
@@ -402,9 +168,9 @@ function Homepage() {
           // Dynamically loop through all API calls
           const apiCalls = Object.values(apiEndpoints).map((endpoint) =>
             axios.post(`https://ppcc.onrender.com/${endpoint}`, {
-              site_url: GobalSite_link,
-              sheet_url: GobalSite_url ? GobalSite_url : "",
-              number_of_ads: GobalNumber_of_ADS || "",
+              site_url: generateSite.site_url,
+              sheet_url: sheetData?.sheet_url ? sheetData?.sheet_url : "",
+              number_of_ads: generateSheet.number_of_ads || "",
             })
           );
           await Promise.all(apiCalls);
@@ -412,9 +178,9 @@ function Homepage() {
           const endpoint = apiEndpoints[name];
           if (endpoint) {
             await axios.post(`https://ppcc.onrender.com/${endpoint}`, {
-              site_url: GobalSite_link,
-              sheet_url: GobalSite_url ? GobalSite_url : "",
-              number_of_ads: GobalNumber_of_ADS || "",
+              site_url: generateSite.site_url,
+              sheet_url: sheetData?.sheet_url ? sheetData?.sheet_url : "",
+              number_of_ads: generateSheet.number_of_ads || "",
             });
           }
         }
@@ -443,7 +209,7 @@ function Homepage() {
 
       const response = await axios.post("https://ppcc.onrender.com/extract",
         {
-          sheet_url: GobalSite_url,
+          sheet_url: sheetData?.sheet_url,
           responseType: 'blob',
         }
       );
@@ -734,7 +500,7 @@ function Homepage() {
                     </div>
                     <div className="outer-more-settings position-relative">
                       <div
-                        className={`more-settings py-4 ${isActive ? "active" : ""
+                        className={`more-settings d-flex flex-wrap align-items-center py-4 ${isActive ? "active" : ""
                           }`}
                       >
                         <div className="btn btn-t btn-sq" onClick={handleToggle}>
@@ -742,43 +508,45 @@ function Homepage() {
                         </div>
                         <div className="settings-inner">
                           <div
-                            className="ross text-end mb-3 w-100"
+                            className="ross text-end w-100"
                             onClick={handleToggle}
                           >
                             X
                           </div>
-                          <div className="outer-label">
-
-                            <div className="flex-lb d-flex">
-                              <div className="label-sc">
-                                <input
-                                  type="checkbox"
-                                  name="sheetURL"
-                                  checked={checkedItems.sheetURL}
-                                  onChange={handleSheetCheck}
-                                />
-                                <label htmlFor="sheetURL">SheetURL</label>
-                              </div>
-                             
-                            </div>
-
-                            {checkedItems.sheetURL &&
-                              <div className="banner-form-sec mt-2">
-                                <div className="form-group me-3">
+                          <div className="outer-label mt-3">
+                            <div className="d-flex">
+                              <div className="flex-lb h-100">
+                                <div className="label-sc  h-100">
                                   <input
-                                    placeholder="sheet url..(optional)"
-                                    className="form-control"
-                                    name="sheet_url"
-                                    value={generateSheet.sheet_url}
-                                    onChange={handleSheetFunc}
+                                    type="checkbox"
+                                    name="sheetURL"
+                                    checked={checkedItems.sheetURL}
+                                    onChange={handleSheetCheck}
                                   />
+                                  <label htmlFor="sheetURL">SheetURL</label>
                                 </div>
+
                               </div>
-                            }
-                            <div className="flex-lb d-flex mt-2">
-                            {/* <div className=" d-flex amounsc1 "> */}
-                            <div className="label-sc">
-                                <div className="label-sc1 d-flex align-items-center">
+
+                              {checkedItems.sheetURL &&
+                                <div className="w-100">
+                                  <div className="form-group ">
+                                    <input
+                                      placeholder="sheet url..(optional)"
+                                      className="form-control"
+                                      name="sheet_url"
+                                      value={generateSheet.sheet_url}
+                                      onChange={handleSheetFunc}
+                                    />
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                            <div className="flex-lb w-100 mt-2">
+                              {/* <div className=" d-flex amounsc1 "> */}
+
+                             
+                                <div className="label-sc1 w-100 d-flex align-items-center no-of-ads">
                                   <label htmlFor="" className="me-2">
                                     Number of Ads
                                   </label>
@@ -791,7 +559,14 @@ function Homepage() {
                                     onChange={handleSheetFunc}
                                   />
                                 </div>
-                              </div>
+
+                            
+
+                            </div>
+                            {warning && <p className="warning" style={{ color: 'red' }}>{warning}</p>}
+                            <div className="flex-lb d-flex w-100 mt-2">
+
+
                               <div className="label-sc">
                                 <input
                                   type="checkbox"
@@ -801,10 +576,9 @@ function Homepage() {
                                 />
                                 <label htmlFor="All">All</label>
                               </div>{" "}
-                            </div>
-                            {warning && <p style={{ color: 'red' }}>{warning}</p>}
-                            <div className="flex-lb d-flex mt-2">
-                              
+
+
+
                               <div className="label-sc">
 
                                 <input
@@ -815,6 +589,7 @@ function Homepage() {
                                 />
                                 <label htmlFor="Headline">Headline</label>
                               </div>
+
                               <div className="label-sc">
                                 <input
                                   type="checkbox"
@@ -826,7 +601,7 @@ function Homepage() {
                               </div>{" "}
                             </div>
                             <div className="flex-lb d-flex">
-                             
+
                               <div className="label-sc">
                                 <input
                                   type="checkbox"
@@ -855,10 +630,7 @@ function Homepage() {
                                 <label htmlFor="snippets">Snippets</label>
                               </div>
                             </div>
-                            <div className="flex-lb d-flex">
-                             
 
-                            </div>
 
 
                           </div>
